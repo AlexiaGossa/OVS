@@ -11,6 +11,7 @@ function CheckCert ( $sURL )
 		'sStartDate' => '',
 		'sExpireDate' => '',
 		'sSubject' => '',
+		'sIssuer' => '',
 	);
 	
 	$aData = $iReturnValue = CacheCurl ( $sURL );
@@ -22,11 +23,13 @@ function CheckCert ( $sURL )
 	else
 	{
 		$aData['sContent'] = '';
+		print_r ( $aData );
 		
 		$aCertificate = array ( );
 		if (isset($aData['aInfo']['certinfo']['0']['Expire date']))
 		{
 			$aOutput['sSubject'] 		= $aData['aInfo']['certinfo']['0']['Subject'];
+			$aOutput['sIssuer']			= $aData['aInfo']['certinfo']['0']['Issuer'];
 			
 			//$aData['aInfo']['certinfo']['0']['Expire date'] = "Dec 5 23:59:59 2024 GMT";
 			$oTimezoneUTC 				= new DateTimeZone("UTC");
