@@ -23,7 +23,7 @@ function CheckCert ( $sURL )
 	else
 	{
 		$aData['sContent'] = '';
-		print_r ( $aData );
+		//print_r ( $aData );
 		
 		$aCertificate = array ( );
 		if (isset($aData['aInfo']['certinfo']['0']['Expire date']))

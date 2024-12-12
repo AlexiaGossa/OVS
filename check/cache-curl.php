@@ -8,7 +8,7 @@ function CacheCurl ( $sUrl )
 	$oData = $iReturnValue = CacheCurl_ReadData ( $sUrl );
 	
 	//Need to do a new curl in case of empty cache
-	if ($iReturnValue==-1)
+	if ( ($iReturnValue==-1) || (is_array($oData)==false) )
 	{
 		$oData = $iReturnValue = CacheCurl_RealCurl ( $sUrl );
 		if (is_array($iReturnValue)==false)
@@ -40,7 +40,8 @@ function CacheCurl_WriteData ( $sUrl, $oData )
 	//Get number of ms from UNIX time
 	$iTimeStamp = intval((microtime(true)*1000));	
 	
-	$sFileName = "cache-curl-".md5($sUrl)."-".$iTimeStamp.".json";
+	$sFileName = "./temp/cache-curl-".md5($sUrl)."-".$iTimeStamp.".json";
+	@mkdir ( "./temp" );
 	file_put_contents ( 
 		$sFileName,
 		json_encode ( $oData, JSON_FORCE_OBJECT ) );
@@ -55,7 +56,7 @@ function CacheCurl_ReadData ( $sUrl )
 	
 	
 
-	$sPattern = "./cache-curl-".$sMD5."-*.json";
+	$sPattern = "./temp/cache-curl-".$sMD5."-*.json";
 	
 	$iBestDeltaTS = -1;
 	$iBestIndex = -1;
@@ -91,8 +92,8 @@ function CacheCurl_ReadData ( $sUrl )
 				}
 			}
 			
-			//Delete file if older than 1-minute
-			if ( ($iDeltaTS==-1) || ($iDeltaTS>60000) )
+			//Delete file if older than 45-second
+			if ( ($iDeltaTS==-1) || ($iDeltaTS>45000) )
 			{
 				unlink ( $oFileEntry[$iIndex] );
 			}
@@ -132,7 +133,7 @@ function CacheCurl_RealCurl ( $sURL )
 		CURLOPT_MAXREDIRS				=> 8,
 		CURLOPT_RETURNTRANSFER			=> true,
 		CURLOPT_USERAGENT				=> "OVS",
-		CURLOPT_CONNECTTIMEOUT			=> 1,
+		CURLOPT_CONNECTTIMEOUT			=> 5,
 		CURLOPT_TIMEOUT					=> 5,
 	    CURLOPT_SSL_VERIFYPEER			=> false,
 		CURLOPT_SSL_VERIFYHOST			=> false,
